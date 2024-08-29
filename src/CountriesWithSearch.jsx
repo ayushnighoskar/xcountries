@@ -9,13 +9,13 @@ function App() {
     fetch("https://restcountries.com/v3.1/all")
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Failed to fetch countries"); // Custom error message
         }
         return response.json();
       })
       .then((data) => setCountries(data))
       .catch((error) => {
-        setError("Error fetching data. Please try again later."); // Set error message
+        setError("Failed to fetch countries"); // Set error message in state
       });
   }, []);
 
@@ -80,8 +80,10 @@ function App() {
         />
       </div>
       <div style={containerStyle}>
-        {error ? ( // Conditionally render error message
-          <div>{error}</div>
+        {error ? (
+          <div className="error-message" style={{ color: "red" }}>
+            {error}
+          </div>
         ) : (
           filteredCountries.map((country) => (
             <div key={country.cca3} style={cardStyle} className="countryCard">
