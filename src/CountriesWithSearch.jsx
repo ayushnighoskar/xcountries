@@ -1,107 +1,66 @@
-import React, { useEffect, useState } from "react";
+// import logo from "./logo.svg";
+// import "./App.css";
+import { useEffect, useState } from "react";
 
 function App() {
   const [countries, setCountries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null);
+  const [filtered, setFiltered] = useState([]);
+  const [search, setSearch] = useState("");
+
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   useEffect(() => {
-    const fetchCountries = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        if (response.status === 200) {
-          const data = await response.json();
-          setCountries(data);
-        } else {
-          setError("Failed to fetch countries");
-        }
-      } catch (error) {
-        setError("Failed to fetch countries");
+        const resp = await fetch("https://restcountries.com/v3.1/all");
+        const data = await resp.json();
+        setCountries(data);
+      } catch (err) {
+        console.log(err);
       }
     };
-
-    fetchCountries();
+    fetchData();
   }, []);
 
-  const filteredCountries = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const data = countries.filter((country) =>
+      country.name.common.toLowerCase().includes(search.toLowerCase())
+    );
+    setFiltered(data);
+  }, [search]);
 
-  const cardStyle = {
-    width: "200px",
-    border: "1px solid #ccc",
-    borderRadius: "10px",
-    margin: "10px",
-    padding: "10px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
-  const containerStyle = {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "80px 20px",
-  };
-
-  const headerStyle = {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100%",
-    backgroundColor: "#f8f8f8",
-    padding: "10px",
-    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-    zIndex: "1000",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  };
-
-  const searchStyle = {
-    width: "50%",
-    padding: "10px",
-    fontSize: "16px",
-  };
-
-  const imageStyle = {
-    width: "100px",
-    height: "100px",
-  };
-
+  console.log(countries);
   return (
-    <>
-      <div style={headerStyle}>
+    <div>
+      <div className="inp">
         <input
           type="text"
-          placeholder="Search for countries..."
-          style={searchStyle}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Enter a country"
+          onChange={(e) => handleChange(e)}
         />
       </div>
-      <div style={containerStyle}>
-        {error ? (
-          <div className="error-message" style={{ color: "red" }}>
-            {error}
-          </div>
-        ) : (
-          filteredCountries.map((country) => (
-            <div key={country.cca3} style={cardStyle} className="countryCard">
-              <img
-                src={country.flags.png}
-                alt={`Flag of ${country.name.common}`}
-                style={imageStyle}
-              />
-              <h2>{country.name.common}</h2>
-            </div>
-          ))
-        )}
+      <div className="App">
+        {search === ""
+          ? countries.map((country) => {
+              return (
+                <div className="countryCard">
+                  <img src={country.flags.png} alt={country.flag}></img>
+                  <p>{country.name.common}</p>
+                </div>
+              );
+            })
+          : filtered.map((country) => {
+              return (
+                <div className="countryCard">
+                  <img src={country.flags.png} alt={country.flag}></img>
+                  <p>{country.name.common}</p>
+                </div>
+              );
+            })}
       </div>
-    </>
+    </div>
   );
 }
 
