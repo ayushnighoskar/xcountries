@@ -8,10 +8,14 @@ function CountriesWithSearch() {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
+        // Simulating an API failure conditionally for the Cypress test
+        if (window.location.href.includes('testError=true')) {
+          throw new Error("Simulated API Error");
+        }
+
         const response = await fetch("https://restcountries.com/v3.1/all");
 
         if (!response.ok) {
-          // Force a failed request for testing purposes
           throw new Error("Failed to fetch countries");
         }
 
