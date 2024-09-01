@@ -3,19 +3,19 @@ import React, { useEffect, useState } from "react";
 function App() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // State to manage error message
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const response = await fetch("https://restcountries.com/v3.1/all");
-        if (response.status === 200) {
-          const data = await response.json();
-          setCountries(data);
-        } else {
-          setError("Failed to fetch countries");
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch countries");
         }
+        const data = await response.json();
+        setCountries(data);
       } catch (error) {
+        console.error(error); // Log error to console for Cypress to detect
         setError("Failed to fetch countries");
       }
     };
@@ -85,9 +85,7 @@ function App() {
       </div>
       <div style={containerStyle}>
         {error ? (
-          <div className="error-message" style={{ color: "red" }}>
-            {error}
-          </div>
+          <div className="error-message">{error}</div> // Display error message
         ) : (
           filteredCountries.map((country) => (
             <div key={country.cca3} style={cardStyle} className="countryCard">
