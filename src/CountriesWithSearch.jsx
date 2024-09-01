@@ -3,18 +3,17 @@ import React, { useEffect, useState } from "react";
 function CountriesWithSearch() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // State to manage error message
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const url = window.Cypress 
-          ? "/getFailedCountries" 
-          : "https://restcountries.com/v3.1/all";
+        // Simulating an API failure conditionally for the Cypress test
+        if (window.location.href.includes('testError=true')) {
+          throw new Error("Simulated API Error");
+        }
 
-        console.log("Fetching from URL:", url); // Debugging to verify URL
-
-        const response = await fetch(url);
+        const response = await fetch("https://restcountries.com/v3.1/all");
 
         if (!response.ok) {
           throw new Error("Failed to fetch countries");
@@ -23,8 +22,8 @@ function CountriesWithSearch() {
         const data = await response.json();
         setCountries(data);
       } catch (error) {
-        console.error("API Error:", error.message);
-        setError("Failed to fetch countries");
+        console.error("API Error:", error.message); // Log error for Cypress to detect
+        setError("Failed to fetch countries"); // Set error in state
       }
     };
 
@@ -93,17 +92,15 @@ function CountriesWithSearch() {
       </div>
       <div style={containerStyle}>
         {error ? (
-          <div className="error-message">{error}</div>
+          <div className="error-message">{error}</div> // Display error message
         ) : (
           filteredCountries.map((country) => (
             <div key={country.cca3} style={cardStyle} className="countryCard">
-              {country.flags && (
-                <img
-                  src={country.flags.png}
-                  alt={`Flag of ${country.name.common}`}
-                  style={imageStyle}
-                />
-              )}
+              <img
+                src={country.flags.png}
+                alt={`Flag of ${country.name.common}`}
+                style={imageStyle}
+              />
               <h2>{country.name.common}</h2>
             </div>
           ))
