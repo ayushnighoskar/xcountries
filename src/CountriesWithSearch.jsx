@@ -3,20 +3,24 @@ import React, { useEffect, useState } from "react";
 function App() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null); // State to handle error
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://restcountries.com/v3.1/all")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch countries"); // Custom error message
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        if (response.status === 200) {
+          const data = await response.json();
+          setCountries(data);
+        } else {
+          setError("Failed to fetch countries");
         }
-        return response.json();
-      })
-      .then((data) => setCountries(data))
-      .catch((error) => {
-        setError("Failed to fetch countries"); // Set error message in state
-      });
+      } catch (error) {
+        setError("Failed to fetch countries");
+      }
+    };
+
+    fetchCountries();
   }, []);
 
   const filteredCountries = countries.filter((country) =>
