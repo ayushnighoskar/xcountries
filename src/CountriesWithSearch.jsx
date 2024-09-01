@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from "react";
 
-function CountriesWithSearch() {
+function App() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null); // State to manage error message
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        // Simulating an API failure conditionally for the Cypress test
-        if (window.location.href.includes('testError=true')) {
-          throw new Error("Simulated API Error");
-        }
-
         const response = await fetch("https://restcountries.com/v3.1/all");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch countries");
+        if (response.status === 200) {
+          const data = await response.json();
+          setCountries(data);
+        } else {
+          setError("Failed to fetch countries");
         }
-
-        const data = await response.json();
-        setCountries(data);
       } catch (error) {
-        console.error("API Error:", error.message); // Log error for Cypress to detect
-        setError("Failed to fetch countries"); // Set error in state
+        setError("Failed to fetch countries");
       }
     };
 
@@ -92,7 +85,9 @@ function CountriesWithSearch() {
       </div>
       <div style={containerStyle}>
         {error ? (
-          <div className="error-message">{error}</div> // Display error message
+          <div className="error-message" style={{ color: "red" }}>
+            {error}
+          </div>
         ) : (
           filteredCountries.map((country) => (
             <div key={country.cca3} style={cardStyle} className="countryCard">
@@ -110,4 +105,4 @@ function CountriesWithSearch() {
   );
 }
 
-export default CountriesWithSearch;
+export default App;
