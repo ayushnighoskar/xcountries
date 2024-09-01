@@ -8,12 +8,12 @@ function CountriesWithSearch() {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        // Simulating an API failure conditionally for the Cypress test
-        if (window.location.href.includes('testError=true')) {
-          throw new Error("Simulated API Error");
-        }
+        // Use a test-specific API route if in testing mode
+        const url = window.Cypress 
+          ? "/getFailedCountries" 
+          : "https://restcountries.com/v3.1/all";
 
-        const response = await fetch("https://restcountries.com/v3.1/all");
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error("Failed to fetch countries");
