@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function App() {
+function CountriesWithSearch() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null); // State to manage error message
@@ -9,14 +9,17 @@ function App() {
     const fetchCountries = async () => {
       try {
         const response = await fetch("https://restcountries.com/v3.1/all");
-        if (response.status !== 200) {
+
+        if (!response.ok) {
+          // Force a failed request for testing purposes
           throw new Error("Failed to fetch countries");
         }
+
         const data = await response.json();
         setCountries(data);
       } catch (error) {
-        console.error(error); // Log error to console for Cypress to detect
-        setError("Failed to fetch countries");
+        console.error("API Error:", error.message); // Log error for Cypress to detect
+        setError("Failed to fetch countries"); // Set error in state
       }
     };
 
@@ -103,4 +106,4 @@ function App() {
   );
 }
 
-export default App;
+export default CountriesWithSearch;
