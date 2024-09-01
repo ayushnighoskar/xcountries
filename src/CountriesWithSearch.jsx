@@ -3,15 +3,16 @@ import React, { useEffect, useState } from "react";
 function CountriesWithSearch() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null); // State to manage error message
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        // Use a test-specific API route if in testing mode
         const url = window.Cypress 
           ? "/getFailedCountries" 
           : "https://restcountries.com/v3.1/all";
+
+        console.log("Fetching from URL:", url); // Debugging to verify URL
 
         const response = await fetch(url);
 
@@ -22,8 +23,8 @@ function CountriesWithSearch() {
         const data = await response.json();
         setCountries(data);
       } catch (error) {
-        console.error("API Error:", error.message); // Log error for Cypress to detect
-        setError("Failed to fetch countries"); // Set error in state
+        console.error("API Error:", error.message);
+        setError("Failed to fetch countries");
       }
     };
 
@@ -92,15 +93,17 @@ function CountriesWithSearch() {
       </div>
       <div style={containerStyle}>
         {error ? (
-          <div className="error-message">{error}</div> // Display error message
+          <div className="error-message">{error}</div>
         ) : (
           filteredCountries.map((country) => (
             <div key={country.cca3} style={cardStyle} className="countryCard">
-              <img
-                src={country.flags.png}
-                alt={`Flag of ${country.name.common}`}
-                style={imageStyle}
-              />
+              {country.flags && (
+                <img
+                  src={country.flags.png}
+                  alt={`Flag of ${country.name.common}`}
+                  style={imageStyle}
+                />
+              )}
               <h2>{country.name.common}</h2>
             </div>
           ))
